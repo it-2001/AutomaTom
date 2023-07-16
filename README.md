@@ -1,5 +1,7 @@
 # AutomaTom
 
+https://github.com/it-2001/AutomaTom/blob/master/kamen.png
+
 ## Description
 
 AutomaTom is an asynchronous cellular automaton engine written in Rust. It is not really useful for anything, but it is a fun project to work on. 
