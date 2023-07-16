@@ -1,6 +1,6 @@
 # AutomaTom
 
-https://github.com/it-2001/AutomaTom/blob/master/kamen.png
+![icon](https://github.com/it-2001/AutomaTom/blob/master/kamen.png)
 
 ## Description
 
