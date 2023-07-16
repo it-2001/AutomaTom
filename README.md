@@ -12,7 +12,7 @@ Head over to the releases page and download the latest release (windows only). T
 
 ## Building
 
-This is meant for people who want to build the engine themselves. You will need to have Rust installed. You can get it from [here](https://www.rust-lang.org/tools/install). Once you have Rust installed, you can clone the repository and run `cargo build --release` to build the engine. The executable will be in `target/release/`.
+This is meant for people who want to build the engine themselves. You will need to have Rust installed. You can get it from [here](https://www.rust-lang.org/tools/install). Once you have Rust installed, you can clone the repository and run `cargo build --release` to build the engine. The executable will be in `target/release/`. Not sure if you need raylib installed, but if you do, you can get it from [here](https://www.raylib.com/).
 
 ## Scipting
 
