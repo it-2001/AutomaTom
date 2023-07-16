@@ -1,0 +1,261 @@
+[entry]
+init = '''
+-- This is the entry point for the simulation.
+-- It is called once at the beginning of the simulation.
+-- You can use this to initialize the simulation.
+
+-- every simulation is 150x150 cells
+-- kernel is always 3x3 cells around the current cell
+-- kernel[2][2] is the current cell
+-- visualization:
+-- [1][1] [1][2] [1][3]
+-- [2][1] current [2][3]
+-- [3][1] [3][2] [3][3]
+
+-- kernel[x][y].state is the state of the cell
+-- kernel[x][y].matter is the matter of the cell
+
+
+
+-- create a box of sand with a smaller box of water inside
+-- sand
+for x = 50, 100 do
+    for y = 50, 100 do
+        update.add({x, y, sand})
+    end
+end
+
+-- water
+for x = 60, 90 do
+    for y = 60, 90 do
+        update.add({x, y, water})
+    end
+end
+'''
+
+
+[cell.sand]
+color = [1.0, 1.0, 0.2]
+state = 1
+update = '''
+if grid:kernel(0, 1).matter > 1 then
+    grid:swap(0, 1)
+else
+    if math.random(1, 2) == 1 then
+        if grid:kernel(-1, 1).matter > 1 then
+            grid:swap(-1, 1)
+        elseif grid:kernel(1, 1).matter > 1 then
+            grid:swap(1, 1)
+        end
+    else
+        if grid:kernel(1, 1).matter > 1 then
+            grid:swap(1, 1)
+        elseif grid:kernel(-1, 1).matter > 1 then
+            grid:swap(-1, 1)
+        end
+    end
+end
+'''
+
+
+[cell.wall]
+color = [0.8, 0.2, 0.4]
+state = 1
+
+
+[cell.water]
+color = [0.0, 0.45, 0.95]
+state = 2
+update = '''
+if grid:kernel(0, 1).matter > 2 then
+    grid:swap(0, 1)
+else
+    if math.random(1, 2) == 1 then
+        if grid:kernel(-1, 1).matter > 2 then
+            grid:swap(-1, 1)
+        elseif grid:kernel(1, 1).matter > 2 then
+            grid:swap(1, 1)
+        elseif grid:kernel(1, 0).matter > 2 then
+            grid:swap(1, 0)
+        elseif grid:kernel(-1, 0).matter > 2 then
+            grid:swap(-1, 0)
+        end
+    else
+        if grid:kernel(1, 1).matter > 2 then
+            grid:swap(1, 1)
+        elseif grid:kernel(-1, 1).matter > 2 then
+            grid:swap(-1, 1)
+        elseif grid:kernel(-1, 0).matter > 2 then
+            grid:swap(-1, 0)
+        elseif grid:kernel(1, 0).matter > 2 then
+            grid:swap(1, 0)
+        end
+    end
+end
+'''
+
+
+[cell.plague]
+color = [0.2, 0.8, 0.2]
+state = 1
+update = '''
+local random = grid:choose(kernel)
+if grid:kernel(random.x, random.y).matter > 0 then
+    grid:update(random.x, random.y, plague)
+end
+'''
+
+[cell.flame1]
+color = [0.8, 0.0, 0.0]
+state = 5
+name = "fire"
+update = '''
+local next = math.random(0, 10)
+if next > 6 then
+    next = flame2
+else
+    next = flame1
+end
+local water = grid:findAll(water)
+if #water > 0 then
+    for i = 1, #water do
+        grid:update(water[i].x, water[i].y, vapor)
+    end
+end
+local pos = math.random(-1, 1)
+if grid:kernel(pos, -1).matter == 255 then
+    grid:update(pos, -1, next)
+end
+grid:update(0, 0, air)
+'''
+
+[cell.flame2]
+color = [0.8, 0.4, 0.0]
+state = 5
+settings = ["hide"]
+update = '''
+local next = math.random(0, 10)
+if next > 6 then
+    next = flame3
+else
+    next = flame2
+end
+local water = grid:findAll(water)
+if #water > 0 then
+    for i = 1, #water do
+        grid:update(water[i].x, water[i].y, vapor)
+    end
+end
+local pos = math.random(-1, 1)
+if grid:kernel(pos, -1).matter == 255 then
+    grid:update(pos, -1, next)
+end
+grid:update(0, 0, air)
+'''
+
+[cell.flame3]
+color = [0.8, 0.8, 0.0]
+state = 5
+settings = ["hide"]
+update = '''
+local next = math.random(0, 10)
+if next > 6 then
+    next = air
+else
+    next = flame3
+end
+local pos = math.random(-1, 1)
+if grid:kernel(pos, -1).matter == 255 then
+    grid:update(pos, -1, next)
+end
+grid:update(0, 0, air)
+'''
+
+
+[cell.stone]
+color = [0.4, 0.4, 0.4]
+state = 1
+update = '''
+if grid:kernel(0, 1).matter > 1 then
+    grid:swap(0, 1)
+end
+'''
+
+[cell.vapor]
+color = [0.7, 0.7, 0.9]
+state = 4
+update = '''
+-- basically water but upside down
+if math.random(1, 1000) > 996 then
+    grid:update(0, 0, water)
+elseif grid:kernel(0, -1).matter > 4 then
+    grid:swap(0, -1)
+else
+    if math.random(1, 2) == 1 then
+        if grid:kernel(-1, -1).matter > 4 then
+            grid:swap(-1, -1)
+        elseif grid:kernel(1, -1).matter > 4 then
+            grid:swap(1, -1)
+        elseif grid:kernel(1, 0).matter > 4 then
+            grid:swap(1, 0)
+        elseif grid:kernel(-1, 0).matter > 4 then
+            grid:swap(-1, 0)
+        end
+    else
+        if grid:kernel(1, -1).matter > 4 then
+            grid:swap(1, -1)
+        elseif grid:kernel(-1, -1).matter > 4 then
+            grid:swap(-1, -1)
+        elseif grid:kernel(-1, 0).matter > 4 then
+            grid:swap(-1, 0)
+        elseif grid:kernel(1, 0).matter > 4 then
+            grid:swap(1, 0)
+        end
+    end
+end
+'''
+
+[cell.spark]
+color = [0.8, 0.8, 0.0]
+state = 5
+update = '''
+local direction = grid:choose()
+local rand = math.random(1, 50)
+for j = 0, rand do
+    grid:update(-direction.x*j, -direction.y*j, flame1)
+end
+local water = grid:findAll(water)
+if #water > 0 then
+    for i = 1, #water do
+        grid:update(water[i].x, water[i].y, vapor)
+    end
+end
+
+grid:update(0, 0, flame1)
+'''
+
+[cell.gunpowder]
+color = [0.2, 0.2, 0.2]
+state = 1
+update = '''
+if grid:kernel(0, 1).matter > 1 then
+    grid:swap(0, 1)
+else
+    if math.random(1, 2) == 1 then
+        if grid:kernel(-1, 1).matter > 1 then
+            grid:swap(-1, 1)
+        elseif grid:kernel(1, 1).matter > 1 then
+            grid:swap(1, 1)
+        end
+    else
+        if grid:kernel(1, 1).matter > 1 then
+            grid:swap(1, 1)
+        elseif grid:kernel(-1, 1).matter > 1 then
+            grid:swap(-1, 1)
+        end
+    end
+end
+if grid:isAround(spark, flame1, flame2) then
+    grid:update(0, 0, spark)
+end
+'''
