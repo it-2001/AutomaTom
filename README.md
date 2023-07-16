@@ -4,7 +4,7 @@
 
 ## Description
 
-AutomaTom is an asynchronous cellular automaton engine written in Rust. It is not really useful for anything, but it is a fun project to work on. 
+AutomaTom is an asynchronous cellular automaton engine written in Rust. It is not really useful for anything, but it is a fun project to work on. Asynchronous meaning that the cells are updated in a random order.
 
 ## Usage
 
